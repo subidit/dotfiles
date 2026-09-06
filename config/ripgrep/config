@@ -1,0 +1,11 @@
+# $XDG_CONFIG_HOME/ripgrep/config — found via $RIPGREP_CONFIG_PATH.
+# Matches the fd flags used for fzf, so search results are consistent
+# whichever tool produced them.
+
+--smart-case
+--hidden
+--glob=!.git/
+
+# Long minified lines destroy a terminal; show a preview instead.
+--max-columns=200
+--max-columns-preview
