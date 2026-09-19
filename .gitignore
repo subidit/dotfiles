@@ -1,13 +1,7 @@
-# Never commit credentials or machine state. Configs are added to this repo
-# explicitly, one file at a time, so a stray secret cannot be swept in by a
-# directory add — these patterns are a second line of defence.
-config/gh/
-config/gcloud/
-config/npm/
-config/pi/
-**/hosts.yml
-**/credentials
-**/*.pem
-**/*.key
-**/id_*
+# Runtime state — generated, never tracked
+.config/cache/
+.config/zsh/.zsh_history
+.config/zsh/.zcompdump*
+.config/zsh/.zcompcache/
+.config/zsh/lesshst
 .DS_Store
