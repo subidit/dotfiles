@@ -69,8 +69,50 @@ eval "$(zoxide init zsh)"   # z / zi — kept last in this block on zoxide's own
 alias zl='zoxide query -ls'   # everything z has learned, ranked by score
 
 # --- Prompt ---
-PROMPT='%F{cyan}%~%f %F{green}❯%f '   # cwd, then the marker you type after
-RPROMPT='%F{242}%*%f'                  # timestamp, right-aligned
+zmodload zsh/datetime   # $EPOCHREALTIME — sub-second resolution, unlike $SECONDS
+autoload -Uz add-zsh-hook
+
+PROMPT='%F{cyan}%~%f %F{green}❯%f '
+
+# Palette from colors.zsh when it loaded, plain ANSI names when it didn't
+typeset -g _p_ok=${ZC[exe]:-green} _p_err=${ZC[alert]:-red} _p_dim=${ZC[quiet]:-242}
+
+PROMPT_MIN_DURATION=2   # anything faster than this isn't worth reporting
+
+typeset -gF _p_start=0
+
+_p_duration() {   # float seconds -> 1.4s / 2m 04s / 1h 02m
+  local -F s=$1
+  (( s < 60 )) && { printf '%.1fs' $s; return }
+  local -i t=$s   # an integer-typed assignment truncates; int() would need zsh/mathfunc
+  (( t < 3600 )) \
+    && printf '%dm %02ds' $(( t / 60 ))   $(( t % 60 )) \
+    || printf '%dh %02dm' $(( t / 3600 )) $(( t % 3600 / 60 ))
+}
+
+_p_preexec() { _p_start=$EPOCHREALTIME }
+
+_p_precmd() {
+  local code=$?   # has to be read before anything else runs
+
+  local seg_status
+  (( code == 0 )) \
+    && seg_status="%F{$_p_ok}%f" \
+    || seg_status="%F{$_p_err} $code%f"
+
+  local seg_dur=''
+  if (( _p_start )); then
+    local -F elapsed=$(( EPOCHREALTIME - _p_start ))
+    (( elapsed >= PROMPT_MIN_DURATION )) && seg_dur="%F{$_p_dim} $(_p_duration $elapsed)%f "
+    _p_start=0
+  fi
+
+  local clock=${${(%):-%D{%l:%M %p}}## }   # %l space-pads single digits; drop the pad
+  RPROMPT="${seg_dur}${seg_status} %F{$_p_dim} ${clock}%f"
+}
+
+add-zsh-hook preexec _p_preexec
+add-zsh-hook precmd  _p_precmd
 
 # --- Plugins (syntax-highlighting must load last) ---
 source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh   # ghost text pulled from history; End or Right accepts it, Alt-Right takes it one word at a time

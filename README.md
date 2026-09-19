@@ -22,8 +22,9 @@ history, the completion dump and `less`'s search history — lives under
 
 ## What's in it
 
-- **Prompt** — two lines of plain zsh: cwd in cyan, a `❯` marker, and the time
-  right-aligned. No theme, no framework, nothing to configure.
+- **Prompt** — plain zsh, no theme. Left: cwd and a `❯` marker. Right: a green
+  ✓ or a red ✗ with the exit code, how long the last command took (only past
+  2s), and a 12-hour clock.
 - **Completion** — `menu select` grid, case-insensitive and partial matching,
   results grouped by type, expensive completers cached.
 - **Options** — `AUTO_CD`, `EXTENDED_GLOB`, `GLOB_DOTS` (with `RM_STAR_WAIT` as
