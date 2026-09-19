@@ -1,22 +1,18 @@
-# --- Completion ---
-typeset -U fpath         # Homebrew's zsh build lists site-functions more than once; dedupe before compinit scans it
-zmodload zsh/complist    # menu select renders nothing without this — the keymap it needs doesn't exist otherwise
-autoload -Uz compinit
-compinit                 # scans $fpath, wires up every TAB completer: _autocd, _git, _cd, all of it
-zstyle ':completion:*' menu select          # an arrow-key navigable grid instead of flat TAB cycling
-zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|=*' 'l:|=* r:|=*'   # case-insensitive, partial-match completion
-zstyle ':completion:*' group-name ''        # matches labeled by type — commands, functions, aliases — not one flat dump
-zstyle ':completion:*' use-cache on         # cache expensive completions like _git branch/tag lookups; $ZDOTDIR/.zcompcache
+# ~/.config/zsh/.zshrc — interactive shell config (ZDOTDIR is set in ~/.zshenv)
+# Order matters in two places only: compinit before any zstyle/completion use,
+# and zsh-syntax-highlighting dead last.
 
-[[ -f ${ZDOTDIR:-$HOME}/colors.zsh ]] && source ${ZDOTDIR:-$HOME}/colors.zsh   # a coordinated palette for eza, completion, fzf, syntax-highlighting, autosuggestions — optional, everything above already works without it
+# --- Palette ---
+[[ -f ${ZDOTDIR:-$HOME}/colors.zsh ]] && source ${ZDOTDIR:-$HOME}/colors.zsh   # coordinated colors for eza, completion, fzf, syntax-highlighting, autosuggestions — optional, everything below works without it
 
 # --- Shell options ---
-setopt AUTO_CD               # a bare directory name and Enter is a cd; needs compinit above for TAB support too
+setopt AUTO_CD               # a bare directory name and Enter is a cd
 setopt EXTENDED_GLOB         # `^`/`~` negation in globs — `ls ^*.log` means everything but the logs
 setopt GLOB_DOTS             # `*` sees dotfiles too, not just what a plain `ls` shows
 setopt RM_STAR_WAIT          # a beat of hesitation before `rm *` — GLOB_DOTS just made that glob wider than it looks
 setopt NO_CASE_GLOB          # `readme*` finds README.md
 setopt INTERACTIVE_COMMENTS  # `#` works as a comment at the prompt, not just inside scripts
+setopt PROMPT_SUBST          # allows substitution inside prompts; harmless and expected by many tools
 
 # --- History ---
 setopt HIST_IGNORE_DUPS        # a command identical to the one right before it doesn't get saved twice
@@ -28,15 +24,28 @@ setopt HIST_IGNORE_SPACE       # a leading space keeps a command out of history 
 setopt HIST_REDUCE_BLANKS      # extra whitespace is trimmed before a line is saved
 setopt SHARE_HISTORY           # every open tab sees the same history, live
 
+# --- Completion ---
+typeset -U fpath         # Homebrew's zsh build lists site-functions more than once; dedupe before compinit scans it
+zmodload zsh/complist    # menu select renders nothing without this — the keymap it needs doesn't exist otherwise
+autoload -Uz compinit
+compinit                 # scans $fpath, wires up every TAB completer: _autocd, _git, _cd, all of it
+zstyle ':completion:*' menu select          # an arrow-key navigable grid instead of flat TAB cycling
+zstyle ':completion:*' matcher-list 'm:{a-zA-Z}={A-Za-z}' 'r:|=*' 'l:|=* r:|=*'   # case-insensitive, partial-match completion
+zstyle ':completion:*' group-name ''        # matches labeled by type — commands, functions, aliases — not one flat dump
+zstyle ':completion:*' use-cache on         # cache expensive completions like _git branch/tag lookups; $ZDOTDIR/.zcompcache
+
 # --- Key bindings ---
 WORDCHARS='*?_-.[]~&;!#$%^(){}<>'   # the default swallows `/` and `=`, so word-motion jumped whole paths in one leap
 bindkey '^U' backward-kill-line     # kill to the start of the line, not the whole line — the default eats text past the cursor too
 
-autoload -Uz history-search-end                                              # history search that lands the cursor at end-of-line, never mid-word
-zle -N history-beginning-search-backward-end history-search-end             # one widget name per direction, same function underneath
+autoload -Uz history-search-end                                 # history search that lands the cursor at end-of-line, never mid-word
+zle -N history-beginning-search-backward-end history-search-end  # one widget name per direction, same function underneath
 zle -N history-beginning-search-forward-end  history-search-end
 bindkey '^[[A' history-beginning-search-backward-end   # this terminal sends ^[[A for Up — $key[Up]/terminfo resolves empty here, so that lookup can't be trusted
 bindkey '^[[B' history-beginning-search-forward-end
+
+# --- Prompt ---
+[[ -f ${ZDOTDIR:-$HOME}/prompt.zsh ]] && source ${ZDOTDIR:-$HOME}/prompt.zsh   # self-contained; defines its own colors, doesn't read colors.zsh
 
 # --- Aliases ---
 case "$TERM_PROGRAM" in
@@ -56,63 +65,16 @@ alias zr='exec zsh'     # a genuinely clean reload — every startup file re-run
 alias c='clear'
 
 # --- Tools ---
-
 # fzf
-eval "$(fzf --zsh)"   # Ctrl-T fuzzy-finds a file, Ctrl-R fuzzy-searches history, Alt-C fuzzy-cd's
+eval "$(fzf --zsh)"    # Ctrl-T fuzzy-finds a file, Ctrl-R fuzzy-searches history, Alt-C fuzzy-cd's
 bindkey -r '\ec'       # Alt-C dropped — zoxide's `zi` already does this job
 export FZF_DEFAULT_COMMAND='fd --hidden --strip-cwd-prefix --exclude .git'   # fd over fzf's own walker: faster, and it respects .gitignore
 export FZF_CTRL_T_COMMAND="$FZF_DEFAULT_COMMAND"
 export FZF_CTRL_T_OPTS="--preview 'bat --color=always --style=numbers --line-range=:200 {}'"   # a live, syntax-highlighted preview pane
 
 # zoxide
-eval "$(zoxide init zsh)"   # z / zi — kept last in this block on zoxide's own advice
+eval "$(zoxide init zsh)"     # z / zi — kept last in this block on zoxide's own advice
 alias zl='zoxide query -ls'   # everything z has learned, ranked by score
-
-# --- Prompt ---
-zmodload zsh/datetime   # $EPOCHREALTIME — sub-second resolution, unlike $SECONDS
-autoload -Uz add-zsh-hook
-
-PROMPT='%F{cyan}%~%f %F{green}❯%f '
-
-# Palette from colors.zsh when it loaded, plain ANSI names when it didn't
-typeset -g _p_ok=${ZC[exe]:-green} _p_err=${ZC[alert]:-red} _p_dim=${ZC[quiet]:-242}
-
-PROMPT_MIN_DURATION=2   # anything faster than this isn't worth reporting
-
-typeset -gF _p_start=0
-
-_p_duration() {   # float seconds -> 1.4s / 2m 04s / 1h 02m
-  local -F s=$1
-  (( s < 60 )) && { printf '%.1fs' $s; return }
-  local -i t=$s   # an integer-typed assignment truncates; int() would need zsh/mathfunc
-  (( t < 3600 )) \
-    && printf '%dm %02ds' $(( t / 60 ))   $(( t % 60 )) \
-    || printf '%dh %02dm' $(( t / 3600 )) $(( t % 3600 / 60 ))
-}
-
-_p_preexec() { _p_start=$EPOCHREALTIME }
-
-_p_precmd() {
-  local code=$?   # has to be read before anything else runs
-
-  local seg_status
-  (( code == 0 )) \
-    && seg_status="%F{$_p_ok}%f" \
-    || seg_status="%F{$_p_err} $code%f"
-
-  local seg_dur=''
-  if (( _p_start )); then
-    local -F elapsed=$(( EPOCHREALTIME - _p_start ))
-    (( elapsed >= PROMPT_MIN_DURATION )) && seg_dur="%F{$_p_dim} $(_p_duration $elapsed)%f "
-    _p_start=0
-  fi
-
-  local clock=${${(%):-%D{%l:%M %p}}## }   # %l space-pads single digits; drop the pad
-  RPROMPT="${seg_dur}${seg_status} %F{$_p_dim} ${clock}%f"
-}
-
-add-zsh-hook preexec _p_preexec
-add-zsh-hook precmd  _p_precmd
 
 # --- Plugins (syntax-highlighting must load last) ---
 source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh   # ghost text pulled from history; End or Right accepts it, Alt-Right takes it one word at a time

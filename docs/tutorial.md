@@ -73,13 +73,40 @@ eval "$(zoxide init zsh)"   # gives you `z` and `zi`; keep this near the end of 
 
 ## 8. Prompt
 
+No theme, no framework — the prompt is a file you write. Start with the
+smallest thing that works, in `~/.config/zsh/prompt.zsh`:
+
 ```zsh
-brew install powerlevel10k
-echo 'source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme' >> ~/.config/zsh/.zshrc
-echo '[[ -f ${ZDOTDIR:-$HOME}/.p10k.zsh ]] && source ${ZDOTDIR:-$HOME}/.p10k.zsh' >> ~/.config/zsh/.zshrc
+PROMPT='%F{cyan}%~%f %F{green}❯%f '
+RPROMPT='%F{242}%D{%l:%M %p}%f'
 ```
 
-Open a new terminal, run `p10k configure`, follow the wizard.
+`%~` is the current directory, `%F{…}`/`%f` set and clear a color, `%D{…}` is
+strftime. Source it from `.zshrc`:
+
+```zsh
+echo '[[ -f ${ZDOTDIR:-$HOME}/prompt.zsh ]] && source ${ZDOTDIR:-$HOME}/prompt.zsh' >> ~/.config/zsh/.zshrc
+```
+
+Open a new terminal. To show anything that changes *between* commands — an exit
+status, how long the last one took — you need a `precmd` hook, which zsh runs
+right before drawing each prompt:
+
+```zsh
+autoload -Uz add-zsh-hook
+_p_precmd() {
+  local code=$?          # must be the first line: anything else overwrites $?
+  (( code == 0 )) \
+    && RPROMPT="%F{green}✓%f" \
+    || RPROMPT="%F{red}✘ $code%f"
+}
+add-zsh-hook precmd _p_precmd
+```
+
+Build up from there — the finished version in this repo adds the elapsed time
+(via a `preexec` hook and `$EPOCHREALTIME`), the clock, and a split-color path.
+Check your work without opening a new shell by running `_p_precmd` and printing
+the result with `print -rP -- "$PROMPT"`.
 
 ## 9. Plugins — the only two, and order matters
 

@@ -5,7 +5,7 @@ A running log of what's in the zsh config and why — not a full changelog, just
 ## Layout
 
 - **`~/.zshenv`** holds only `ZDOTDIR` and `SHELL_SESSIONS_DISABLE`. This is the one file that can't move — zsh always checks `$HOME/.zshenv` before it even knows where `$ZDOTDIR` is, so it's the unavoidable bootstrap.
-- Everything else lives in **`~/.config/zsh/`** (`.zprofile`, `.zshrc`). Once `ZDOTDIR` is set, `compinit`'s dumpfile and macOS's own `HISTFILE` default both resolve there automatically (`${ZDOTDIR:-$HOME}/...`) — no extra path config needed for `.zcompdump` or `.zsh_history`.
+- Everything else lives in **`~/.config/zsh/`** (`.zprofile`, `.zshrc`, plus `prompt.zsh` and `colors.zsh`, both conditionally sourced). Once `ZDOTDIR` is set, `compinit`'s dumpfile and macOS's own `HISTFILE` default both resolve there automatically (`${ZDOTDIR:-$HOME}/...`) — no extra path config needed for `.zcompdump` or `.zsh_history`.
 - **`.zprofile`** only has the Homebrew `eval "$(brew shellenv zsh)"` line — verified against Homebrew's actual `install.sh`, which itself targets `${ZDOTDIR:-$HOME}/.zprofile`. Kept out of `.zshenv` deliberately: it costs a subprocess spawn (~10ms) and `.zshenv` runs on *every* zsh invocation including nested ones, while `.zprofile` only runs once per login shell.
 - Skipped full XDG (`XDG_CONFIG_HOME`/`XDG_CACHE_HOME`/etc). The `ZDOTDIR` move alone gets `$HOME` clean; the rest of XDG's value is cross-desktop-environment compatibility, which doesn't apply on macOS anyway.
 - `.zsh_sessions/` (Terminal.app's own per-window bookkeeping, unrelated to zsh) can't be relocated, only disabled — `SHELL_SESSIONS_DISABLE=1`.
@@ -89,7 +89,46 @@ POWERLEVEL9K_CONFIG_FILE=$ZDOTDIR/.p10k-terminal.zsh p10k configure
 ```
 This is plain shell syntax (`VAR=value command`), not anything P10k-specific — the same trick works for overriding any env var for a single command without `export`ing it. Running the wizard this way produced a second, independent config file the `.zshrc` case statement could then pick between.
 
-**Status: reverted.** Both examples of this pattern that existed in the live config — the prompt split above, and an earlier `eza --icons` split (Ghostty had a built-in Nerd Font, the other two didn't) — were removed once all three terminals reached equal capability (real Nerd Fonts installed and set as each app's actual terminal/editor font). Neither `.zshrc` currently branches on `$TERM_PROGRAM` for anything; both are back to one unconditional behavior for all terminals. The technique above is documented for whenever a *real* difference between terminals comes up again, not because it's in use right now.
+**Status: reverted, then partly reinstated.** Both original examples — the P10k config split above, and an earlier `eza --icons` split (Ghostty had a built-in Nerd Font, the other two didn't) — were removed once all three terminals reached equal capability. The P10k half is dead for good: there's no P10k any more.
+
+The branch came back for Apple Terminal alone, which genuinely ships no patched font: it gets `--icons=never` on the eza aliases, and `PROMPT_POWERLINE=0` in `prompt.zsh` for a glyph-free right prompt. That's the standard for justifying one of these — a real capability difference, not a preference — and both branches key on the *consequence* (icons on or off) rather than treating the terminal's name as meaningful in itself.
+
+## Prompt: written from scratch, in its own file
+
+**Powerlevel10k is gone.** It worked; the question was what it was buying. For this config: a git segment and a clock. The price was `.p10k.zsh` as a second config language, `gitstatusd` as a background daemon, instant-prompt's rules about what may print during startup, and a cache directory needing `XDG_CACHE_HOME` to relocate. Replaced by `prompt.zsh`, 87 lines, in the same language as everything else.
+
+**It lives in `prompt.zsh`, not `.zshrc`.** The prompt is the most-edited and least-related part of a shell config. Separating it means midnight color fiddling can't break the parts that work.
+
+**It's standalone — no `colors.zsh` dependency.** It defines its own hexes with a truecolor branch and a 256-color fallback, and renders correctly under `zsh -f`. Duplicating a few hex values across two files is the deliberate cost: the palette can be rewritten or deleted without taking the prompt with it.
+
+**What it shows.** Left: the path, ancestors in `dir` blue and the current folder in brighter `link` cyan, then `❯` — green normally, red after a failure. Right: elapsed time past `PROMPT_MIN_DURATION` (0.2s), then `✓` or `✘ <code>`, then a 12-hour clock. Segments are joined with `${(j: :)…}` so a hidden one leaves no gap; the previous version concatenated fixed spaces and left a three-space hole where two icon slots had gone missing.
+
+**A git segment was built, measured, and removed.** `vcs_info` cost 69 ms per prompt (several git invocations) and still doesn't do ahead/behind. A single `git status --porcelain=v2 --branch` parsed in zsh gave more information for 9.5 ms. Either could come back — but nothing should shell out on every keystroke by default, and gitstatusd exists precisely because doing this correctly on a large repo is hard.
+
+**A Powerlevel10k "rainbow"-style version was built and rejected.** Full powerline blocks with background fills, chevron seams, Nerd-Font/ASCII fallback. It worked; it looked wrong in this terminal. Kept as a note rather than a file: the seam trick is that the chevron between two blocks is drawn in the *incoming* block's color on the *outgoing* block's background.
+
+### Two bugs worth remembering
+
+1. `$''` raises `character not in range` wherever the locale isn't UTF-8 — fine in Ghostty, fatal over bare ssh, and it blanks the entire right prompt. Store glyphs as literal characters.
+2. `${${(%):-%D{%l:%M %p}}## }` works in an assignment and silently breaks when re-expanded under `PROMPT_SUBST`: the `}` inside `%D{...}` closes the outer substitution early, leaving a literal `## }` on screen. Build the string inside `precmd` instead.
+
+Also: every `$(...)` in `precmd` is a subshell fork, once per prompt. The segment joiners return through `$REPLY` for that reason.
+
+## eza: filenames colored by category
+
+The two-letter `EZA_COLORS` codes only ever colored eza's own columns — permission bits, size scale, git status, ownership. Ordinary files fell through to `fi`, one flat ink, so a listing of a source directory was nearly monochrome.
+
+Added an `_eza_ext` extension map: source green, web/markup cyan, config amber, prose lavender, archives orange, secrets red, generated grey. Written as `'*.py=${SGR[exe]}'` in single quotes and expanded in one pass afterwards, so the block reads as a category map instead of a wall of escape codes.
+
+The palette's rule earned its keep immediately. Prose was first assigned `dir` blue, which made `notes.md` and `src/` the same hue with only bold separating them — a category collision. Moved to `special` lavender, nominally the devices hue, on the grounds that a socket or block device never appears in a directory you'd actually read.
+
+Worth knowing about the default this replaces: eza's built-in scheme groups by *is this executable*, so `.pem`, `.py` and `.ts` all come out green — a private key colored the same as "fine".
+
+## Layout and measurements, restated
+
+`.zshrc` sections were reordered to: palette, options, history, completion, keybindings, prompt, aliases, tools, plugins. Only two orderings are load-bearing — `compinit` before the completion `zstyle`s, and `zsh-syntax-highlighting` last, since it wraps every widget defined above it. Everything else is grouped for reading.
+
+Measured after the rewrite: ~40 ms interactive startup (about half of it `compinit`), under 10 ms per prompt render. The duration/exit-status machinery costs nothing measurable against a bare prompt — it never forks.
 
 ## Deferred / open
 
@@ -99,4 +138,6 @@ This is plain shell syntax (`VAR=value command`), not anything P10k-specific —
 
 ## Not yet in this file
 
-This doc has drifted behind several real chunks of work — worth a fuller pass later: the Powerlevel10k prompt setup (instant-prompt, per-emulator config split, the `XDG_CACHE_HOME` cache-folder fix), Ghostty's own config (`~/.config/ghostty/config`, font size, discovering its bundled Nerd Font fallback), the full coordinated color palette (`colors.zsh`, now actually built — was listed as deferred above until this update), and the terminal font setup (`AnnotationM NFM`, `GoogleSansCode NFM` → Victor Mono, Iosevka Term NF) across all three apps.
+Still undocumented here: Ghostty's own config (`~/.config/ghostty/config`, font size, discovering its bundled Nerd Font fallback) and the terminal font setup (`AnnotationM NFM`, `GoogleSansCode NFM` → Victor Mono, Iosevka Term NF) across all three apps.
+
+The Powerlevel10k setup that earlier versions of this note promised to write up — instant-prompt, the per-emulator config split, the `XDG_CACHE_HOME` cache-folder fix — is no longer worth documenting: P10k is out, and the reasoning that replaced it is in the prompt section above.
