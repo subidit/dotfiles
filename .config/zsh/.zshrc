@@ -1,9 +1,3 @@
-# Powerlevel10k instant prompt. Must stay at the top of the file — anything
-# above this that might print or prompt defeats the whole point of it.
-if [[ -r "$XDG_CACHE_HOME/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "$XDG_CACHE_HOME/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
 # --- Completion ---
 typeset -U fpath         # Homebrew's zsh build lists site-functions more than once; dedupe before compinit scans it
 zmodload zsh/complist    # menu select renders nothing without this — the keymap it needs doesn't exist otherwise
@@ -75,17 +69,8 @@ eval "$(zoxide init zsh)"   # z / zi — kept last in this block on zoxide's own
 alias zl='zoxide query -ls'   # everything z has learned, ranked by score
 
 # --- Prompt ---
-source /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme
-# regenerate a config with:
-#   p10k configure                                                        -> .p10k.zsh (Ghostty, and the fallback for everything else)
-#   POWERLEVEL9K_CONFIG_FILE=$ZDOTDIR/.p10k-terminal.zsh p10k configure   -> .p10k-terminal.zsh (Apple Terminal)
-case "$TERM_PROGRAM" in
-  Apple_Terminal) _p10k_cfg=${ZDOTDIR:-$HOME}/.p10k-terminal.zsh ;;   # its own tuning
-  *)              _p10k_cfg=${ZDOTDIR:-$HOME}/.p10k.zsh ;;           # everyone else shares this one
-esac
-[[ -f $_p10k_cfg ]] && source $_p10k_cfg || source ${ZDOTDIR:-$HOME}/.p10k.zsh   # falls back to the shared config if the specific one is ever missing
-unset _p10k_cfg
-[[ -f ${ZDOTDIR:-$HOME}/.p10k-custom.zsh ]] && source ${ZDOTDIR:-$HOME}/.p10k-custom.zsh   # applies on top of whichever config just loaded; survives p10k configure
+PROMPT='%F{cyan}%~%f %F{green}❯%f '   # cwd, then the marker you type after
+RPROMPT='%F{242}%*%f'                  # timestamp, right-aligned
 
 # --- Plugins (syntax-highlighting must load last) ---
 source /opt/homebrew/share/zsh-autosuggestions/zsh-autosuggestions.zsh   # ghost text pulled from history; End or Right accepts it, Alt-Right takes it one word at a time
