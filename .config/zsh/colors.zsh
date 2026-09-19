@@ -147,8 +147,54 @@ typeset -a _eza=(
   "cr=${SGR[alert]}" "co=${SGR[archive]}" "bu=${SGR[archive]}"
   "tm=${SGR[quiet]}" "cm=${SGR[quiet]}" "do=${SGR[ink]}" "sc=${SGR[ink]}"
 )
-export EZA_COLORS="${(j.:.)_eza}"
-unset _eza
+# Per-extension rules. The two-letter codes above color eza's own UI columns and
+# its built-in file kinds; a plain source or config file still falls through to
+# `fi`, which is one flat ink. These globs give the filenames themselves a hue,
+# under the same rule as everything else: HUE IS CATEGORY, never rank.
+typeset -a _eza_ext=(
+  # source — green, the same family as an executable, because it's code you run
+  '*.py=${SGR[exe]}' '*.rs=${SGR[exe]}' '*.go=${SGR[exe]}' '*.c=${SGR[exe]}'
+  '*.h=${SGR[exe]}' '*.cpp=${SGR[exe]}' '*.swift=${SGR[exe]}' '*.lua=${SGR[exe]}'
+  '*.rb=${SGR[exe]}' '*.java=${SGR[exe]}' '*.zsh=${SGR[exe]}' '*.sh=${SGR[exe]}'
+  '*.bash=${SGR[exe]}' '*.fish=${SGR[exe]}' '*.vim=${SGR[exe]}' '*.el=${SGR[exe]}'
+
+  # web/markup — cyan, a lighter weight of the same idea
+  '*.ts=${SGR[link]}' '*.tsx=${SGR[link]}' '*.js=${SGR[link]}' '*.jsx=${SGR[link]}'
+  '*.html=${SGR[link]}' '*.css=${SGR[link]}' '*.scss=${SGR[link]}' '*.svelte=${SGR[link]}'
+  '*.vue=${SGR[link]}' '*.sql=${SGR[link]}'
+
+  # config — amber, the "this changes behaviour" hue
+  '*.json=${SGR[g_mod]}' '*.yaml=${SGR[g_mod]}' '*.yml=${SGR[g_mod]}'
+  '*.toml=${SGR[g_mod]}' '*.ini=${SGR[g_mod]}' '*.conf=${SGR[g_mod]}'
+  '*.cfg=${SGR[g_mod]}' '*.plist=${SGR[g_mod]}' '*rc=${SGR[g_mod]}'
+  'Makefile=${SGR[g_mod]}' 'Dockerfile=${SGR[g_mod]}' 'justfile=${SGR[g_mod]}'
+
+  # prose — lavender. NOT dir blue: a .md sat at the same hue as the folder next
+  # to it, with only bold telling them apart. Lavender is nominally the devices
+  # hue (pi/so/bd/cd above), but a socket or block device never shows up in a
+  # directory you'd actually read, so that collision stays theoretical.
+  '*.md=${SGR[special]}' '*.rst=${SGR[special]}' '*.org=${SGR[special]}'
+  '*.tex=${SGR[special]}' '*.pdf=${SGR[special]}' '*.txt=${SGR[muted]}'
+  'README=1;${SGR[ink]}' 'README.md=1;${SGR[ink]}' 'LICENSE=${SGR[muted]}'
+
+  # archives — orange, matching eza's own compressed-file kind
+  '*.zip=${SGR[archive]}' '*.tar=${SGR[archive]}' '*.gz=${SGR[archive]}'
+  '*.tgz=${SGR[archive]}' '*.bz2=${SGR[archive]}' '*.xz=${SGR[archive]}'
+  '*.zst=${SGR[archive]}' '*.7z=${SGR[archive]}' '*.rar=${SGR[archive]}'
+  '*.dmg=${SGR[archive]}' '*.pkg=${SGR[archive]}'
+
+  # secrets — the alert hue, so a stray key is visible at a glance
+  '*.pem=${SGR[alert]}' '*.key=${SGR[alert]}' '*.p12=${SGR[alert]}'
+  '*.env=${SGR[alert]}' '.env=${SGR[alert]}'
+
+  # generated / machine-owned — recessive; you don't edit these
+  '*.lock=${SGR[quiet]}' '*.sum=${SGR[quiet]}' '*.min.js=${SGR[quiet]}'
+  '*.map=${SGR[quiet]}' '*.pyc=${SGR[rule]}' '*.o=${SGR[rule]}'
+  '*.bak=${SGR[rule]}' '*.log=${SGR[quiet]}'
+)
+_eza_ext=( ${(e)_eza_ext} )   # the entries above are written with ${SGR[...]} unexpanded for readability; resolve them now
+export EZA_COLORS="${(j.:.)_eza}:${(j.:.)_eza_ext}"
+unset _eza _eza_ext
 
 # --- LS_COLORS (completion menu) ---------------------------------------
 typeset -a _ls=(
