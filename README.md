@@ -71,3 +71,11 @@ on its own; anywhere else without a patched font, set `PROMPT_POWERLINE=0`.
 - [Reference](docs/reference.md) — what the config actually contains
 - [Explanation](docs/explanation.md) — the reasoning behind its shape
 - [Decisions](docs/decisions.md) — running log of what changed and why
+
+## Added 2026-10-25
+
+These folders sit alongside the setup above and don't replace any of it:
+
+- [tidy-home/](tidy-home/) — the tidy-home guide: keeping the top of `~` down to `.config`, `.cache`, `.local` and `.zshenv` on a fresh Mac ([tutorial](tidy-home/docs/tutorials/fresh-mac.md)), plus its decisions log and the results of a test run in a macOS VM
+- [snapshots/2026-10-25/](snapshots/2026-10-25/) — the shell and terminal config in use on that date, at its real paths: `.zshenv`, `.config/zsh/` (`.zshrc`, `.zprofile`, `.p10k.zsh`) and `.config/ghostty/` (config and cursor shader)
+- [notes/tidy-home/](notes/tidy-home/) — working notes kept for the tidy-home project

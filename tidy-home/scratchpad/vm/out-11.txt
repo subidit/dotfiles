@@ -1,0 +1,191 @@
+## step 11, 2026-10-25 22:46:40, macOS 27.0.1
+
+## ls -A ~
+.cache
+.CFUserTextEncoding
+.codex
+.config
+.DS_Store
+.local
+.Trash
+.zshenv
+Desktop
+Documents
+Downloads
+Library
+Movies
+Music
+Pictures
+Public
+
+## variables in this tab
+ZDOTDIR=/Users/goose/.config/zsh
+XDG_CONFIG_HOME=/Users/goose/.config
+XDG_CACHE_HOME=/Users/goose/.cache
+XDG_DATA_HOME=/Users/goose/.local/share
+XDG_STATE_HOME=/Users/goose/.local/state
+PYTHON_HISTORY=/Users/goose/.local/state/python/history
+NODE_REPL_HISTORY=/Users/goose/.local/state/node/repl_history
+npm_config_cache=/Users/goose/.cache/npm
+npm_config_userconfig=/Users/goose/.config/npm/npmrc
+CLAUDE_CONFIG_DIR=/Users/goose/.config/claude
+COPILOT_HOME=/Users/goose/.config/copilot
+PI_CODING_AGENT_DIR=/Users/goose/.config/pi/agent
+VSCODE_PORTABLE=/Users/goose/.local/share/vscode
+MPLCONFIGDIR=unset
+IPYTHONDIR=unset
+JUPYTER_CONFIG_DIR=unset
+KERAS_HOME=unset
+NLTK_DATA=unset
+RUSTUP_HOME=unset
+CODEX_HOME=unset
+DSH_HOME=unset
+DSH_AGENTS_HOME=unset
+EDITOR=micro
+
+## ~/.config ~/.local ~/.cache ~/.codex ~/.dsh ~/.agents (3 levels, names only)
+~/.cache
+~/.cache/npm
+~/.cache/npm/_cacache
+~/.cache/npm/_cacache/content-v2
+~/.cache/npm/_cacache/index-v5
+~/.cache/npm/_cacache/tmp
+~/.cache/npm/_logs
+~/.cache/npm/_logs/2026-10-25T15_44_48_752Z-debug-0.log
+~/.cache/npm/_logs/2026-10-25T16_43_39_428Z-debug-0.log
+~/.cache/npm/_update-notifier-last-checked
+~/.cache/p10k-dump-goose.zsh
+~/.cache/p10k-dump-goose.zsh.zwc
+~/.cache/p10k-goose
+~/.cache/p10k-goose/prompt-12
+~/.cache/p10k-instant-prompt-goose.zsh
+~/.cache/p10k-instant-prompt-goose.zsh.zwc
+~/.cache/zsh
+~/.cache/zsh/zcompdump
+~/.codex
+~/.codex/config.toml
+~/.codex/log
+~/.codex/log/codex-login.log
+~/.codex/tmp
+~/.codex/tmp/arg0-macos
+~/.codex/tmp/arg0-macos/codex-arg0IQNKSf
+~/.config
+~/.config/claude
+~/.config/claude/.claude.json
+~/.config/claude/backups
+~/.config/claude/backups/.claude.json.backup.1792944687631
+~/.config/claude/backups/.claude.json.backup.1792944951347
+~/.config/claude/cache
+~/.config/claude/cache/changelog.md
+~/.config/claude/sessions
+~/.config/claude/settings.json
+~/.config/copilot
+~/.config/copilot/logs
+~/.config/copilot/logs/.copilot-log.lock
+~/.config/copilot/logs/process-1792943321563-7986.log
+~/.config/copilot/logs/process-1792943322085-8005.log
+~/.config/ghostty
+~/.config/ghostty/config.ghostty
+~/.config/git
+~/.config/git/config
+~/.config/zsh
+~/.config/zsh/.p10k.zsh
+~/.config/zsh/.zprofile
+~/.config/zsh/.zsh_history
+~/.config/zsh/.zsh_sessions
+~/.config/zsh/.zsh_sessions/_expiration_check_timestamp
+~/.config/zsh/.zsh_sessions/0DB6151C-8733-44DF-A0CF-E2922978792D.history
+~/.config/zsh/.zsh_sessions/0DB6151C-8733-44DF-A0CF-E2922978792D.session
+~/.config/zsh/.zsh_sessions/DA7521FC-B397-4ED7-9803-0C9B90B35F7A.history
+~/.config/zsh/.zsh_sessions/DA7521FC-B397-4ED7-9803-0C9B90B35F7A.session
+~/.config/zsh/.zsh_sessions/F2CC746D-2693-4B10-A003-567B397432C4.history
+~/.config/zsh/.zsh_sessions/F2CC746D-2693-4B10-A003-567B397432C4.session
+~/.config/zsh/.zshenv
+~/.config/zsh/.zshrc
+~/.local
+~/.local/share
+~/.local/share/vscode
+~/.local/share/vscode/.vscode
+~/.local/share/vscode/argv.json
+~/.local/share/vscode/extensions
+~/.local/share/vscode/shared-data
+~/.local/share/vscode/user-data
+~/.local/state
+~/.local/state/gh
+~/.local/state/gh/state.yml
+~/.local/state/node
+~/.local/state/python
+
+## links
+/Users/goose/.config/zsh/.zshenv -> ../../.zshenv
+/Applications/code-portable-data -> /Users/goose/.local/share/vscode
+
+## ~/Library spots that should or shouldn't exist
+absent: ~/Library/Application Support/Code
+absent: ~/Library/Application Support/zoxide
+absent: ~/Library/Jupyter
+
+## ~/.Trash (names only; may need Full Disk Access)
+ls: /Users/goose/.Trash: Operation not permitted
+
+## commands
+brew: /opt/homebrew/bin/brew
+git: /usr/bin/git
+gh: /opt/homebrew/bin/gh
+node: /opt/homebrew/bin/node
+npm: /opt/homebrew/bin/npm
+python3: /opt/homebrew/bin/python3
+uv: /opt/homebrew/bin/uv
+fzf: /opt/homebrew/bin/fzf
+zoxide: /opt/homebrew/bin/zoxide
+micro: /opt/homebrew/bin/micro
+claude: /opt/homebrew/bin/claude
+codex: /opt/homebrew/bin/codex
+dsh: -
+opencode: -
+pi: -
+gcloud: -
+
+## macOS zsh startup lines
+/etc/zshrc:16:HISTFILE=${ZDOTDIR:-$HOME}/.zsh_history
+/etc/zshrc_Apple_Terminal:81:# SHELL_SESSION_HISTORY to 0. The shell options INC_APPEND_HISTORY,
+/etc/zshrc_Apple_Terminal:85:# it by setting SHELL_SESSION_HISTORY to 1.
+/etc/zshrc_Apple_Terminal:94:#   SHELL_SESSIONS_DISABLE=1
+/etc/zshrc_Apple_Terminal:96:if [ ${SHELL_SESSION_DID_INIT:-0} -eq 0 ] && [ -n "$TERM_SESSION_ID" ] && [ ${SHELL_SESSIONS_DISABLE:-0} -eq 0 ]; then
+/etc/zshrc_Apple_Terminal:99:    SHELL_SESSION_DID_INIT=1
+/etc/zshrc_Apple_Terminal:102:    SHELL_SESSION_DIR="${ZDOTDIR:-$HOME}/.zsh_sessions"
+/etc/zshrc_Apple_Terminal:103:    SHELL_SESSION_FILE="$SHELL_SESSION_DIR/$TERM_SESSION_ID.session"
+/etc/zshrc_Apple_Terminal:104:    mkdir -m 700 -p "$SHELL_SESSION_DIR"
+/etc/zshrc_Apple_Terminal:110:    if [ -r "$SHELL_SESSION_FILE" ]; then
+/etc/zshrc_Apple_Terminal:111:	. "$SHELL_SESSION_FILE"
+/etc/zshrc_Apple_Terminal:112:	/bin/rm "$SHELL_SESSION_FILE"
+/etc/zshrc_Apple_Terminal:127:	if [ -n "$HISTFILE" ]; then
+/etc/zshrc_Apple_Terminal:132:		allowed=${SHELL_SESSION_HISTORY:-0}
+/etc/zshrc_Apple_Terminal:134:		allowed=${SHELL_SESSION_HISTORY:=1}
+/etc/zshrc_Apple_Terminal:143:    if [ ${SHELL_SESSION_HISTORY:-1} -eq 1 ]; then
+/etc/zshrc_Apple_Terminal:144:	SHELL_SESSION_HISTFILE="$SHELL_SESSION_DIR/$TERM_SESSION_ID.history"
+/etc/zshrc_Apple_Terminal:145:	SHELL_SESSION_HISTFILE_NEW="$SHELL_SESSION_DIR/$TERM_SESSION_ID.historynew"
+/etc/zshrc_Apple_Terminal:146:	SHELL_SESSION_HISTFILE_SHARED="$HISTFILE"
+/etc/zshrc_Apple_Terminal:149:	    (umask 077; /usr/bin/touch "$SHELL_SESSION_HISTFILE_NEW")
+/etc/zshrc_Apple_Terminal:150:	    HISTFILE="$SHELL_SESSION_HISTFILE_NEW"
+/etc/zshrc_Apple_Terminal:151:	    SHELL_SESSION_HISTORY=1
+/etc/zshrc_Apple_Terminal:157:	if [ -s "$SHELL_SESSION_HISTFILE" ]; then
+/etc/zshrc_Apple_Terminal:158:	    fc -R "$SHELL_SESSION_HISTFILE"
+/etc/zshrc_Apple_Terminal:169:		if [ ${SHELL_SESSION_DID_HISTORY_CHECK:-0} -eq 0 ]; then
+/etc/zshrc_Apple_Terminal:170:		    SHELL_SESSION_DID_HISTORY_CHECK=1
+/etc/zshrc_Apple_Terminal:188:	    if [ -f "$SHELL_SESSION_HISTFILE_SHARED" ] && [ ! -s "$SHELL_SESSION_HISTFILE" ]; then
+/etc/zshrc_Apple_Terminal:190:		(umask 077; /bin/cp "$SHELL_SESSION_HISTFILE_SHARED" "$SHELL_SESSION_HISTFILE")
+/etc/zshrc_Apple_Terminal:195:	    (umask 077; /bin/cat "$SHELL_SESSION_HISTFILE_NEW" >> "$SHELL_SESSION_HISTFILE_SHARED")
+/etc/zshrc_Apple_Terminal:196:	    (umask 077; /bin/cat "$SHELL_SESSION_HISTFILE_NEW" >> "$SHELL_SESSION_HISTFILE")
+/etc/zshrc_Apple_Terminal:197:	    /bin/rm "$SHELL_SESSION_HISTFILE_NEW"
+/etc/zshrc_Apple_Terminal:202:		fc -p "$SHELL_SESSION_HISTFILE_SHARED" && fc -P
+/etc/zshrc_Apple_Terminal:203:		fc -p "$SHELL_SESSION_HISTFILE" && fc -P
+/etc/zshrc_Apple_Terminal:215:	if [ -n "$SHELL_SESSION_FILE" ]; then
+/etc/zshrc_Apple_Terminal:217:	    (umask 077; echo 'echo Restored session: "$(/bin/date -r '$(/bin/date +%s)')"' >| "$SHELL_SESSION_FILE")
+/etc/zshrc_Apple_Terminal:220:	    whence shell_session_save_user_state >/dev/null && shell_session_save_user_state "$SHELL_SESSION_FILE"
+/etc/zshrc_Apple_Terminal:223:		$f "$SHELL_SESSION_FILE"
+/etc/zshrc_Apple_Terminal:232:    SHELL_SESSION_TIMESTAMP_FILE="$SHELL_SESSION_DIR/_expiration_check_timestamp"
+/etc/zshrc_Apple_Terminal:234:	if [ ! -e "$SHELL_SESSION_TIMESTAMP_FILE" ] || [ -z "$(/usr/bin/find "$SHELL_SESSION_TIMESTAMP_FILE" -mtime -1d)" ]; then
+/etc/zshrc_Apple_Terminal:235:	    local expiration_lock_file="$SHELL_SESSION_DIR/_expiration_lockfile"
+/etc/zshrc_Apple_Terminal:238:		local delete_count=$(/usr/bin/find "$SHELL_SESSION_DIR" -type f -mtime +2w -print -delete | /usr/bin/wc -l)
+/etc/zshrc_Apple_Terminal:240:		(umask 077; /usr/bin/touch "$SHELL_SESSION_TIMESTAMP_FILE")

@@ -1,0 +1,11 @@
+theme = Arcoiris
+font-size = 16
+window-width = 90
+window-height = 30
+macos-option-as-alt = left
+
+# Cursor: a block with a glowing trail when it jumps and a pulsing halo at rest (the shader)
+# cursor-style = block
+# cursor-style-blink = true
+# shell-integration-features = no-cursor
+custom-shader = ~/.config/ghostty/shaders/cursor-trail.glsl
