@@ -1,3 +1,4 @@
 - [Explicit order and reminders](explicit-order-and-reminders.md) — export → mkdir folder → new Ghostty tab → echo → run tool; `!` box is an old shell
+- [GitHub attribution](github-attribution.md) — commit as subidit, no Claude co-author; the dotfiles cleanup recipe, and texfonts/typophilia/handy-lists still to do
 - [No hand-typed values](no-hand-typed-values.md) — print/copy exact values with commands; `<placeholder>` only when unavoidable
 - [App decisions](app-decisions.md) — what's in/out of the guide (VS Code in, Hermes out), VM-then-factory-reset plan
